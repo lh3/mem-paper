@@ -1,0 +1,158 @@
+\documentclass{bioinfo}
+\copyrightyear{2013}
+\pubyear{2013}
+
+\usepackage{natbib}
+\bibliographystyle{apalike}
+
+\DeclareMathOperator*{\argmax}{argmax}
+
+\begin{document}
+\firstpage{1}
+
+\title{Aligning sequence reads, clone sequences and assembly contigs with BWA-MEM}
+
+\author[Li]{Heng Li$^{1,}$\footnote{to whom correspondence should be addressed}}
+
+\address{$^1$Broad Institute, 7 Cambridge Center, Cambridge, MA 02142, USA}
+
+\history{Received on XXXXX; revised on XXXXX; accepted on XXXXX}
+\editor{Associate Editor: XXXXXXX}
+\maketitle
+
+\begin{abstract}
+\section{Summary:} BWA-MEM is a new alignment algorithm for aligning sequence
+reads or long query sequences against a large reference genome such as human.
+It automatically chooses between local and end-to-end alignments, supports
+paired-end reads and performs split alignment. The algorithm is robust to
+sequencing errors and applicable to a wide range of sequence lengths from 70bp
+to a couple of megabases. For short-read mapping, BWA-MEM shows better
+performance and alignment accuracy than many state-of-art read aligners to
+date.
+
+\section{Availability and implementation:} BWA-MEM is implemented as a
+component of BWA, which is available at http://github.com/lh3/bwa.
+
+\section{Contact:} hengli@broadinstitute.org
+\end{abstract}
+
+\section{Introduction}
+
+Most short-reads mappers for next-generation sequencing (NGS) data were developed
+when sequence reads were about 36bp in length. For short reads, it is reasonable
+to require end-to-end alignment (i.e. every read base to be aligned to the
+reference) and to only report hits within certain hamming or edit distance.
+However, with emerging technologies and improved chemistry, NGS reads are not
+short any more, which poses new challenges to read alignment. For longer reads,
+it becomes more important to allow long gaps under the affine-gap penalty and
+to report multiple non-overlapping local hits potentially caused by structural
+variations or misassemblies in the reference genome. Many short-read alignment
+algorithms are not applicable or not preferred for mapping longer reads. At the
+same time, although several mature algorithms exist for aligning capillary
+sequence reads, they are slow and lack features for analyzing large-scale NGS
+data. Fast moving NGS technologies keep pressing for the development of new
+alignment algorithms.
+
+In this background, a few long-read alignment algorithms, including BWA-SW,
+Bowtie2, Cushaw2 and GEM, have been developed. However, they all have some
+weakness. BWA-SW is slower than bowtie2 at a comparable accuracy and less
+accurate then Cushaw2 at a comparable speed (see Results). Bowtie2 and Cushaw2
+do not work with very long query sequences. These three aligners do not fully
+use the paired-end information to improve alignments in hard regions, either.
+While GEM is both fast and accurate, it mandates end-to-end alignment and does
+not perform affine-gap alignment, which may limit its uses for long-read
+alignment. A fast, accurate and fully featured aligner accepting sequences
+with a wide range of lengths is still lacking. This motivates us to explore
+a new algorithm, BWA-MEM.
+
+\begin{methods}
+
+\section{Methods}
+
+\subsection{Aligning single query sequence}
+
+\subsubsection{Seeding and re-seeding} BWA-MEM follows the canonical
+seed-and-extend paradigm. It initially seeds an alignment with supermaximal
+exact matches (SMEMs) using an algorithm we found previously. This algorithm
+essentially finds at each query position the longest exact match covering the
+position. Suppose we have a SMEM of length $l$ with $k$ occurrences in the
+reference genome. If $l$ is too large (over 28bp by default), we then re-seed
+with exact matches that cover the middle base of the SMEM and occur at least
+$k+1$ times in the genome, which can be done by requiring a minimum occurrence
+in the original SMEM algorithm. Re-seeding reduces the chance of missing a seed
+from the true alignment.
+
+\subsubsection{Chaining and chain filtering} We call a group of seeds that are
+colinear and close to each other as a \emph{chain}. While seeding, we chain
+the seeds with a naive algorithm. We then filter out short chains that are
+largely contained in a long chain and is much worse than the long chain (by
+default, both 50\% and 38bp shorter than the long chain). Note that chain
+filtering aims to reduce unsuccessful seed extension at a later step. The
+chains detected here do not need to be accurate. We may implicitly split or
+merge chains later.
+
+\subsubsection{Seed extension} We rank the seeds by the length of the chains
+the seeds belong to and then by the length of the seeds in each chain. We go
+through each seed, from the best ranked to the worst, and drop the seed if it
+is already ontained in an alignment found before, or use a banded
+affine-gap-penalty dynamic programming to extend the seed in either direction
+if the seed potentially leads to a new alignment. Up to here, we find all
+the potential alignments of a query sequence.
+
+BWA-MEM's deed extension differs from the standard seed extension in two
+aspects. Firstly, suppose at a certain extension step we come to reference
+position $x$ with the best extension score achieved at query position $y$.
+BWA-MEM will stop extension if the score at $(x,y)$ is smaller than the best
+extension score observed so far by $Z+|x-y|\times p_{\rm gapExt}$, where
+$p_{\rm gapExt}$ is the gap extension penalty. This heuristic avoids extending
+through a poorly aligned region with good flanking alignment. It is similar
+to the X-dropoff heuristic in BLAST, but does not penalize long gaps in
+one of the reference or the query sequences.
+
+Secondly, while extending a seed, BWA-MEM tries to keep track of the best
+extension score reaching the end of the query sequence. If the difference
+between the best score reaching the end and the best local alignment score is
+below a threshold, which is called clipping penalty, the local alignment will
+be rejected even if it has a higher score. BWA-MEM uses this strategy to
+automatically choose between local and end-to-end alignments. It may allow true
+substitutions towards the end of a read and thus reduces reference bias, while
+avoids introducing excessive mismatches and gaps which may happen when we force
+an end-to-end alignment for a read bridging a break point associated with a
+long insertion or deletion (indel) or a structural variation or a misassembly.
+
+\subsection{Paired-end mapping}
+
+\subsubsection{Estimating insert size distribution and rescuing missing hits}
+Like BWA, BWA-MEM processes a batch of reads at a time.  Given paired-end data,
+it estimates the mean $\mu$ and the variance $\sigma^2$ of the insert size
+distribution from reliable single-end alignments. For the top 100 hits (by
+default) of each end, BWA-MEM performs the Smith-Waterman alignment (SW) for
+its mate within a window $[\mu-4\sigma,\mu+4\sigma]$ from the hit. The second
+best alignment score is recorded to detect potential mismapping in a long
+tandem repeat.  Hits found both from the single-sequence alignment and SW
+rescuing will be fed to the next step for pairing.
+
+\subsubsection{Pairing} Given the $i$-th hit for the first read and $j$-th hit
+for the second, BWA-MEM computes their distance $d_{ij}$ if the two hits are in
+the right orientation, or sets $d_{ij}$ to infinity otherwise. It scores the
+pair $(i,j)$ as $S_{ij}=S_i+S_j-\min\{-a\log_4 P(d_{ij}),U\}$, where $S_i$ and
+$S_j$ are the SW score of the two reads in the pair, respectively, $a$ is the
+matching score and $P(d)$ gives the probability of observing an insert size
+larger than $d$ assuming a normal distribution. `$\log_4$' arises when we
+relate SW score to a probabilistic alignment. $U$ is the unpairing penalty,
+which controls whether pairing is preferred: if $d_{ij}$ is small enough (such
+that $-a\log_4 P(d_{ij})<U$), BWA-MEM prefers to pair the two ends; otherwise
+it prefers the unpaired alignments. BWA-MEM chooses the pair $(i,j)$ that
+maximizes $S_{ij}$ as the final alignment for both ends.
+
+This pairing strategy jointly considers the alignment scores of both ends,
+the insert size and the possibility that they may come from a chimeric read
+pair. It prefers pairing the two ends but does not aggressively force two ends
+into a read pair.
+
+\end{methods}
+
+\paragraph{Funding\textcolon} NIH 1U01HG005208-01.
+\bibliography{bwamem}
+
+\end{document}
