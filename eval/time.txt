@@ -1,0 +1,220 @@
+$ time bwa mem hs37m.fa r1.fa r2.fa > r12.mem.sam
+
+[main] Version: 0.6.2-r311-beta
+[main] CMD: ../bwa mem ../hs37m.fa r1.fa r2.fa
+[main] Real time: 496.932 sec; CPU: 496.640 sec
+
+real    8m17.012s
+user    8m13.530s
+sys     0m3.111s
+
+$ time cat r1.fa r2.fa | bwa mem hs37m.fa - > r12-se.mem.sam
+
+[main] Version: 0.6.2-r311-beta
+[main] CMD: ../bwa mem ../hs37m.fa -
+[main] Real time: 467.947 sec; CPU: 467.539 sec
+
+real    7m48.012s
+user    7m44.845s
+sys     0m2.784s
+
+$ time cat r1.fa r2.fa | gem-mapper -I hs37m-gem.gem -e 0.04 -m 0.04 -s 1 > r12-se.gem.map
+
+real    5m14.239s
+user    5m11.665s
+sys     0m1.814s
+
+$ time cat r1.fa r2.fa | gem-mapper -I hs37m-gem.gem -e5 -m5 -s1 > r12-se.gem-e5.map
+
+real    7m11.411s
+user    7m7.904s
+sys     0m1.853s
+
+$ time gem-mapper -I hs37m-gem.gem -1 r1.fa -2 r2.fa -e5 -m5 -s1 -pb > r12-se.gem-bp-e5-s1.map
+
+real    8m51.228s
+user    8m47.692s
+sys     0m2.027s
+
+$ time bowtie2 -x hs37m-bt2 -1 r1.fa -2 r2.fa -X 650 -f > r12-pe.bt2.sam
+
+real    9m5.345s
+user    9m2.610s
+sys     0m2.005s
+
+$ time cat r1.fa r2.fa | bowtie2 -x hs37m-bt2 -f - > r12-se.bt2.sam
+
+real    9m45.121s
+user    9m40.919s
+sys     0m1.861s
+
+$ (bwa aln default)
+
+[main] Version: 0.6.2-r301-beta
+[main] CMD: ../bwa aln ../hs37m.fa r1.fa
+[main] Real time: 504.406 sec; CPU: 504.268 sec
+
+real    8m24.408s
+user    8m22.990s
+sys     0m1.280s
+
+[main] Version: 0.6.2-r301-beta
+[main] CMD: ../bwa aln ../hs37m.fa r2.fa
+[main] Real time: 507.282 sec; CPU: 507.142 sec
+
+real    8m27.286s
+user    8m25.868s
+sys     0m1.275s
+
+$ time bwa sampe hs37m.fa r1.bwa.sai r2.bwa.sai r1.fa r2.fa > r12.bwa.sam
+
+[main] Version: 0.6.2-r301-beta
+[main] CMD: ../bwa sampe ../hs37m.fa r1.bwa.sai r2.bwa.sai r1.fa r2.fa
+[main] Real time: 83.975 sec; CPU: 81.579 sec
+
+real    1m23.979s
+user    1m13.906s
+sys     0m7.673s
+
+$ time bwa bwasw hs37m.fa r1.fa r2.fa
+
+[main] Version: 0.6.2-r301-beta
+[main] CMD: ../bwa bwasw ../hs37m.fa r1.fa r2.fa
+[main] Real time: 1043.532 sec; CPU: 1043.139 sec
+
+real    17m23.536s
+user    17m17.776s
+sys     0m5.364s
+
+$ time cat r1.fa r2.fa | bwa bwasw hs37m.fa -
+
+[main] Version: 0.6.2-r303-beta
+[main] CMD: ../bwa bwasw ../hs37m.fa -
+[main] Real time: 1004.568 sec; CPU: 1002.234 sec
+
+$ time ../bwa mem -r 100 ../hs37m.fa r1.fa r2.fa > r12-pe.mem-fast.sam
+
+[main] Version: 0.6.2-r311-beta
+[main] CMD: ../bwa mem -r 100 ../hs37m.fa r1.fa r2.fa
+[main] Real time: 287.196 sec; CPU: 285.622 sec
+
+real    4m48.083s
+user    4m42.895s
+sys     0m2.727s
+
+$ time cat r1.fa r2.fa | ../bwa mem -r 100 ../hs37m.fa - > r12-se.mem-fast.sam
+
+[main] Version: 0.6.2-r311-beta
+[main] CMD: ../bwa mem -r 100 ../hs37m.fa -
+[main] Real time: 254.896 sec; CPU: 252.576 sec
+
+real    4m14.899s
+user    4m9.941s
+sys     0m2.726s
+
+$ (bwa samse, twice)
+
+[main] Version: 0.6.2-r311-beta
+[main] CMD: ../bwa samse ../hs37m.fa r1.bwa.sai r1.fa
+[main] Real time: 24.007 sec; CPU: 21.996 sec
+
+[main] Version: 0.6.2-r311-beta
+[main] CMD: ../bwa samse ../hs37m.fa r2.bwa.sai r2.fa
+[main] Real time: 24.096 sec; CPU: 22.040 sec
+
+$ ./tmap mapall -f hs37m.fa -r r12.fa -n 1  -v stage1 map4 > r12-se.tmap.sam
+
+real    11m37.692s
+user    11m33.818s
+sys     0m2.515s
+
+$ time ./tmap mapall -f hs37m.fa -r ../101/r1.fa -r ../101/r2.fa -n 1 -Q 2 -L -l 3.0 -v stage1 map4 > r12-pe.tmap.sam
+
+real    14m56.838s
+user    14m50.425s
+sys     0m2.854s
+
+$ time ./novoalign -i 500 50 -oSAM -rRandom -dhs37m.novo -f ../101/r1.fq > r1-se.novo.sam
+
+real    31m51.528s
+user    31m45.881s
+sys     0m4.216s
+
+$ time ./novoalign -i 500 50 -oSAM -rRandom -dhs37m.novo -f ../101/r2.fq > r2-se.novo.sam
+
+real    34m9.094s
+user    34m4.498s
+sys     0m3.851s
+
+$ time ./novoalign -i 500 50 -oSAM -rRandom -dhs37m.novo -f ../101/r1.fq ../101/r2.fq > r12-pe.novo.sam
+
+real    42m8.130s
+user    42m1.657s
+sys     0m4.954s
+
+$ time cat r1.fq r2.fq | smalt-0.7.2/smalt_x86_64 map -f samsoft -o r12-se.smalt.sam ../hs37-smalt-k20s13 /dev/stdin
+
+real    64m19.301s
+user    64m15.500s
+sys     0m3.790s
+
+$ time smalt-0.7.2/smalt_x86_64 map -f samsoft -o r12-pe.smalt.sam -i 650 -j 450 ../hs37-smalt-k20s13 r1.fq r2.fq
+
+real    28m27.861s
+user    28m22.985s
+sys     0m2.449s
+
+$ time cat r1.fa r2.fa | bowtie2 --local -x ../../mapeval/hs37m-bt2 -f - > r12-se.bt2l.sam
+
+real    13m16.911s
+user    13m12.581s
+sys     0m1.955s
+
+$ time bowtie2 --local -x ../../mapeval/hs37m-bt2 -f -1 r1.fa -2 r2.fa -X 650 > r12-pe.bt2l.sam
+
+real    16m52.420s
+user    16m43.899s
+sys     0m2.548s
+
+$ time lastal -Q1 ../hs37-last r1.fq >r1-se.last.maf
+
+real    25m50.591s
+user    25m8.976s
+sys     0m24.424s
+
+$ time lastal -Q1 ../hs37-last r2.fq >r2-se.last.maf
+
+real    25m9.357s
+user    24m44.161s
+sys     0m14.731s
+
+$ time cat r1-se.last.maf r2-se.last.maf | last-278/scripts/last-map-probs.py -m 0.5 - | last-278/scripts/maf-convert.py sam - > r12-se.last.sam
+
+real    16m38.894s
+user    20m34.778s
+sys     0m28.410s
+
+$ time last-278/scripts/last-pair-probs.py -m 0.5 r1-se.last.maf r2-se.last.maf | last-278/scripts/maf-convert.py sam - > r12-pe.last.sam
+
+real    98m10.114s
+user    38m33.687s
+sys     0m33.484s
+
+$ time cushaw2-v2.1.8/cushaw2 -r ../../index/cushaw2/hs37m.fa -f r1.fa -o r1-se.cushaw.sam
+
+real    7m59.908s
+user    7m57.283s
+sys     0m1.667s
+
+$ time cushaw2-v2.1.8/cushaw2 -r ../../index/cushaw2/hs37m.fa -f r2.fa -o r2-se.cushaw.sam
+
+real    8m8.601s
+user    8m2.948s
+sys     0m1.693s
+
+$ time cushaw2-v2.1.8/cushaw2 -r ../../index/cushaw2/hs37m.fa -q r1.fa r2.fa -o r12-pe.cushaw.sam
+
+real    17m11.156s
+user    17m3.952s
+sys     0m2.778s
+
