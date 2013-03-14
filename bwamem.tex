@@ -10,9 +10,9 @@
 
 \title{Aligning sequence reads, clone sequences and assembly contigs with BWA-MEM}
 
-\author[Li]{Heng Li$^{1,}$\footnote{to whom correspondence should be addressed}}
+\author[Li]{Heng Li}
 
-\address{$^1$Broad Institute, 7 Cambridge Center, Cambridge, MA 02142, USA}
+\address{Broad Institute of Harvard and MIT, 7 Cambridge Center, Cambridge, MA 02142, USA}
 
 \history{Received on XXXXX; revised on XXXXX; accepted on XXXXX}
 \editor{Associate Editor: XXXXXXX}
@@ -24,8 +24,8 @@ reads or long query sequences against a large reference genome such as human.
 It automatically chooses between local and end-to-end alignments, supports
 paired-end reads and performs split alignment. The algorithm is robust to
 sequencing errors and applicable to a wide range of sequence lengths from 70bp
-to a couple of megabases. For short-read mapping, BWA-MEM shows better
-performance than many state-of-art read aligners to date.
+to a few megabases. For short-read mapping, BWA-MEM shows better performance
+than many state-of-art read aligners to date.
 
 \section{Availability and implementation:} BWA-MEM is implemented as a
 component of BWA, which is available at http://github.com/lh3/bwa.
@@ -63,7 +63,6 @@ may limit its uses for long-read alignment. A fast, accurate and fully featured
 aligner accepting sequences with a wide range of lengths is still lacking. This
 motivates us to explore a new algorithm.
 
-\vspace*{-1em}
 \begin{methods}
 
 \section{Methods}
@@ -77,25 +76,24 @@ exact matches (SMEMs) using an algorithm we found previously~\citep[Algorithm
 match covering the position. However, occasionally the true alignment may not
 contain any SMEMs.  To reduce mismappings caused by missing seeds, we introduce
 re-seeding. Suppose we have a SMEM of length $l$ with $k$ occurrences in the
-reference genome. If $l$ is too large (over 28bp by default), we then re-seed
-with exact matches that cover the middle base of the SMEM and occur at least
-$k+1$ times in the genome. Such seeds can be found by requiring a minimum
-occurrence in the original SMEM algorithm.
+reference genome. If $l$ is too large (over 28bp by default), we re-seed
+with the longest exact matches that cover the middle base of the SMEM and occur
+at least $k+1$ times in the genome. Such seeds can be found by requiring a
+minimum occurrence in the original SMEM algorithm.
 
 \subsubsection{Chaining and chain filtering} We call a group of seeds that are
 colinear and close to each other as a \emph{chain}. We chain the seeds while
 seeding. After that, we filter out short chains that are largely contained in a
 long chain and are much worse than the long chain (by default, both 50\% and
-38bp shorter than the long chain). Note that chain filtering aims to reduce
-unsuccessful seed extension at a later step. Each chain may not always
-correspond to a final hit. The chains detected here do not need to be accurate.
+38bp shorter than the long chain). Chain filtering aims to reduce unsuccessful
+seed extension at a later step. Each chain may not always correspond to a final
+hit. Chains detected here do not need to be accurate.
 
 \subsubsection{Seed extension} We rank a seed by the length of the chain it
-belongs to and then by the seed length in the chain. For each seed in the
-ranked list, from the best to the worst, we drop the seed if it is already
-contained in an alignment found before, or extend the seed with a banded
-affine-gap-penalty dynamic programming (DP) if it potentially leads to a new
-alignment.
+belongs to and then by the seed length. For each seed in the ranked list, from
+the best to the worst, we drop the seed if it is already contained in an
+alignment found before, or extend the seed with a banded affine-gap-penalty
+dynamic programming (DP) if it potentially leads to a new alignment.
 
 BWA-MEM's seed extension differs from the standard seed extension in two
 aspects. Firstly, suppose at a certain extension step we come to reference
@@ -113,11 +111,10 @@ extension score reaching the end of the query sequence. If the difference
 between the best score reaching the end and the best local alignment score is
 below a threshold, the local alignment will be rejected even if it has a higher
 score. BWA-MEM uses this strategy to automatically choose between local and
-end-to-end alignments. It may allow true substitutions towards the end of a
-read and thus reduces reference bias, while avoids introducing excessive
-mismatches and gaps which may happen when we force an end-to-end alignment for
-a read bridging a break point associated with a long insertion or deletion
-(indel) or a structural variation or a misassembly.
+end-to-end alignments. It may align through true variations towards the end of
+a read and thus reduces reference bias, while avoids introducing excessive
+mismatches and gaps which may happen when we force a chimeric read into an
+end-to-end alignment.
 
 \begin{figure}[tb]
 \centering
@@ -132,8 +129,8 @@ single end (SE; top panel) or as paired end (PE; bottom panel). GEM is
 configured to allow up to 5 gaps and to output suboptimal alignments (option
 `--e5 --m5 --s1' for SE and `--e5 --m5 --s1 --pb' for PE). Its mapping quality
 is estimated with a BWA-like algorithm. Other mappers are run essentially with
-the default setting except specifying the insert size distribution. The run
-time on a single CPU core is shown in the parantheses.}\label{fig:eval}
+the default setting except for specifying the insert size distribution. The CPU
+time in seconds is reported in the parantheses.}\label{fig:eval}
 \end{figure}.
 
 \subsection{Paired-end mapping}
@@ -191,7 +188,8 @@ BWA-MEM is a fast and accurate aligner for sequence reads and is one of the few
 that work well for both short reads and long sequences up to a few megabases.
 Technically, it is possible to make BWA-MEM even faster for long sequences by
 using SSE2-based banded DP and by restricting DP to regions not covered by a
-long exact match.
+long exact match. Seeding is the bottleneck for short sequences, while banded
+DP is the bottleneck for long sequences.
 
 \section{Acknowledgements}
 \paragraph{Funding\textcolon} NIH 1U01HG005208-01.
