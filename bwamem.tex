@@ -27,8 +27,7 @@ It automatically chooses between local and end-to-end alignments, supports
 paired-end reads and performs split alignment. The algorithm is robust to
 sequencing errors and applicable to a wide range of sequence lengths from 70bp
 to a couple of megabases. For short-read mapping, BWA-MEM shows better
-performance and alignment accuracy than many state-of-art read aligners to
-date.
+performance than many state-of-art read aligners to date.
 
 \section{Availability and implementation:} BWA-MEM is implemented as a
 component of BWA, which is available at http://github.com/lh3/bwa.
@@ -53,8 +52,8 @@ sequence reads, they are slow and lack features for analyzing large-scale NGS
 data. Fast moving NGS technologies keep pressing for the development of new
 alignment algorithms.
 
-In this background, a few long-read alignment algorithms, including BWA-SW,
-Bowtie2, Cushaw2 and GEM, have been developed. However, they all have some
+In this background, a few long-read alignment algorithms, including BWA-SW~\citep{Li:2010fk},
+Bowtie2~\citep{Langmead:2012fk}, Cushaw2~\citep{Liu:2012uq} and GEM~\citep{Marco-Sola:2012kx}, have been developed. However, they all have some
 weakness. BWA-SW is slower than bowtie2 at a comparable accuracy and less
 accurate then Cushaw2 at a comparable speed (see Results). Bowtie2 and Cushaw2
 do not work with very long query sequences. These three aligners do not fully
@@ -63,7 +62,7 @@ While GEM is both fast and accurate, it mandates end-to-end alignment and does
 not perform affine-gap alignment, which may limit its uses for long-read
 alignment. A fast, accurate and fully featured aligner accepting sequences
 with a wide range of lengths is still lacking. This motivates us to explore
-a new algorithm, BWA-MEM.
+a new algorithm.
 
 \begin{methods}
 
@@ -73,7 +72,7 @@ a new algorithm, BWA-MEM.
 
 \subsubsection{Seeding and re-seeding} BWA-MEM follows the canonical
 seed-and-extend paradigm. It initially seeds an alignment with supermaximal
-exact matches (SMEMs) using an algorithm we found previously. This algorithm
+exact matches (SMEMs) using an algorithm we found previously~\citep[Algorithm 5]{Li:2012fk}. This algorithm
 essentially finds at each query position the longest exact match covering the
 position. Suppose we have a SMEM of length $l$ with $k$ occurrences in the
 reference genome. If $l$ is too large (over 28bp by default), we then re-seed
@@ -89,7 +88,7 @@ largely contained in a long chain and is much worse than the long chain (by
 default, both 50\% and 38bp shorter than the long chain). Note that chain
 filtering aims to reduce unsuccessful seed extension at a later step. The
 chains detected here do not need to be accurate. We may implicitly split or
-merge chains later.
+merge chains during seed extension.
 
 \subsubsection{Seed extension} We rank the seeds by the length of the chains
 the seeds belong to and then by the length of the seeds in each chain. We go
@@ -106,7 +105,7 @@ BWA-MEM will stop extension if the score at $(x,y)$ is smaller than the best
 extension score observed so far by $Z+|x-y|\times p_{\rm gapExt}$, where
 $p_{\rm gapExt}$ is the gap extension penalty. This heuristic avoids extending
 through a poorly aligned region with good flanking alignment. It is similar
-to the X-dropoff heuristic in BLAST, but does not penalize long gaps in
+to the X-dropoff heuristic in BLAST~\citep{Altschul:1997vn}, but does not penalize long gaps in
 one of the reference or the query sequences.
 
 Secondly, while extending a seed, BWA-MEM tries to keep track of the best
@@ -119,6 +118,21 @@ substitutions towards the end of a read and thus reduces reference bias, while
 avoids introducing excessive mismatches and gaps which may happen when we force
 an end-to-end alignment for a read bridging a break point associated with a
 long insertion or deletion (indel) or a structural variation or a misassembly.
+
+\begin{figure}[tb]
+\centering
+\includegraphics[width=0.4\textwidth]{eval/alnroc-se}\\
+\includegraphics[width=0.4\textwidth]{eval/alnroc-pe}
+\caption{Percent mapped reads as a function of the false alignment rate under
+different mapping quality cutoff. $10^6$ pairs of 101bp reads are simulated
+from the human reference genome using wgsim (http://bit.ly/wgsim2) with 1.5\%
+substitution errors and 0.2\% indel variants. The insert size follows a normal
+distribution $N(500,50^2)$. The reads are aligned back to the genome either as
+single end (top panel) or as paired end (bottom panel). GEM is configured to
+allow gaps and output suboptimal alignments (option --e5 --m5 --s1). Its
+mapping quality is estimated with a BWA-like algorithm. Other mappers are run
+essentially with the default setting except specifying the insert size
+distribution. CPU timeU is shown in the parantheses.} \end{figure}\label{fig:eval}.
 
 \subsection{Paired-end mapping}
 
@@ -152,6 +166,22 @@ into a read pair.
 
 \end{methods}
 
+\section{Results}
+
+We evaluated the performance of BWA-MEM on simulated data together with
+GEM, Bowtie2, Cushaw2, BWA-SW, BWA~\citep{Li:2009uq} and NovoAlign
+(http://novocraft.com) (Figure~\ref{fig:eval}). We were unable to obtain high
+accuracy for paired-end data with GEM, so we did not show it result. In this
+evaluation, NovoAlign is the most accurate. BWA-MEM is only second to NovoAlign
+in accuracy and among the fastest in speed.
+
+\section{Conclusion}
+
+BWA-MEM is a fast and accurate alignment algorithm for sequence reads. It is
+one of the few aligners that work with both short reads and long sequences up
+to a few megabases.
+
+\section{Acknowledgements}
 \paragraph{Funding\textcolon} NIH 1U01HG005208-01.
 \bibliography{bwamem}
 
