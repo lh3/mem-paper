@@ -25,7 +25,7 @@ It automatically chooses between local and end-to-end alignments, supports
 paired-end reads and performs split alignment. The algorithm is robust to
 sequencing errors and applicable to a wide range of sequence lengths from 70bp
 to a few megabases. For short-read mapping, BWA-MEM shows better performance
-than many state-of-art read aligners to date.
+than several state-of-art read aligners to date.
 
 \section{Availability and implementation:} BWA-MEM is implemented as a
 component of BWA, which is available at http://github.com/lh3/bwa.
@@ -83,11 +83,12 @@ minimum occurrence in the original SMEM algorithm.
 
 \subsubsection{Chaining and chain filtering} We call a group of seeds that are
 colinear and close to each other as a \emph{chain}. We chain the seeds while
-seeding. After that, we filter out short chains that are largely contained in a
-long chain and are much worse than the long chain (by default, both 50\% and
-38bp shorter than the long chain). Chain filtering aims to reduce unsuccessful
-seed extension at a later step. Each chain may not always correspond to a final
-hit. Chains detected here do not need to be accurate.
+seeding. After chains are collected, we filter out short chains that are
+largely contained in a long chain and are much worse than the long chain (by
+default, both 50\% and 38bp shorter than the long chain). Chain filtering aims
+to reduce unsuccessful seed extension at a later step. Each chain may not
+always correspond to a final hit. Chains detected here do not need to be
+accurate.
 
 \subsubsection{Seed extension} We rank a seed by the length of the chain it
 belongs to and then by the seed length. For each seed in the ranked list, from
@@ -118,8 +119,8 @@ end-to-end alignment.
 
 \begin{figure}[tb]
 \centering
-\includegraphics[width=0.4\textwidth]{eval/alnroc-se}\\
-\includegraphics[width=0.4\textwidth]{eval/alnroc-pe}
+\includegraphics[width=0.4\textwidth]{alnroc-se}\\
+\includegraphics[width=0.4\textwidth]{alnroc-pe}
 \caption{Percent mapped reads as a function of the false alignment rate under
 different mapping quality cutoff. $10^6$ pairs of 101bp reads are simulated
 from the human reference genome using wgsim (http://bit.ly/wgsim2) with 1.5\%
@@ -127,10 +128,11 @@ substitution errors and 0.2\% indel variants. The insert size follows a normal
 distribution $N(500,50^2)$. The reads are aligned back to the genome either as
 single end (SE; top panel) or as paired end (PE; bottom panel). GEM is
 configured to allow up to 5 gaps and to output suboptimal alignments (option
-`--e5 --m5 --s1' for SE and `--e5 --m5 --s1 --pb' for PE). Its mapping quality
-is estimated with a BWA-like algorithm. Other mappers are run essentially with
+`--e5 --m5 --s1' for SE and `--e5 --m5 --s1 --pb' for PE). GEM does not compute
+mapping quality. Its mapping quality is estimated with a BWA-like algorithm
+with suboptimal alignments available. Other mappers are run essentially with
 the default setting except for specifying the insert size distribution. The CPU
-time in seconds is reported in the parantheses.}\label{fig:eval}
+time in seconds is shown in the parantheses.}\label{fig:eval}
 \end{figure}.
 
 \subsection{Paired-end mapping}
@@ -181,7 +183,7 @@ It finished the alignment in 131 seconds, reporting 104,321 substitutions of
 which 102,241 overlapping with the nucmer output. Manual examination of the
 substitutions unique to each aligner reveals that most of them fall in short
 regions with very high divergence. It is unclear which aligner is better. Note
-that although Nucmer is faster in the evaluation, only BWA-MEM scales well to
+that although nucmer is faster in the evaluation, only BWA-MEM scales well to
 large genomes.
 
 BWA-MEM is a fast and accurate aligner for sequence reads and is one of the few
