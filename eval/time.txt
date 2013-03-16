@@ -218,15 +218,19 @@ real    17m11.156s
 user    17m3.952s
 sys     0m2.778s
 
-$ time bwa mem ../hs37m.fa long-250k.fq > long-250k.mem.sam
+$ time 0.5-r123_x86_64/seqalto_basic align ../../index/seqalto/hs37m.alto -1 r1.fa > r1-se.alto.sam
 
-real    4m4.531s
-user    3m59.209s
-sys     0m2.484s
+real    7m19.280s
+user    7m3.337s
+sys     0m2.546s
 
-$ time bowtie2 -x ../../index/bowtie2/hs37m-bt2 long-250k.fq > long-250k.bt2.sam
+real    7m9.942s
+user    7m1.116s
+sys     0m2.343s
 
-real    24m21.418s
-user    24m12.825s
-sys     0m2.107s
+$ time 0.5-r123_x86_64/seqalto_basic align ../../index/seqalto/hs37m.alto -i 650 -m 500 -1 r1.fa -2 r2.fa > r12-pe.alto.sam
+
+real    14m45.028s
+user    14m36.166s
+sys     0m2.790s
 
