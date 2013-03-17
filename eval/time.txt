@@ -234,3 +234,15 @@ real    14m45.028s
 user    14m36.166s
 sys     0m2.790s
 
+$ time bwa mem ../hs37m.fa long-250k.fq > long-250k.mem.sam
+
+real    4m4.531s
+user    3m59.209s
+sys     0m2.484s
+
+$ time bowtie2 -x ../../index/bowtie2/hs37m-bt2 long-250k.fq > long-250k.bt2.sam
+
+real    24m21.418s
+user    24m12.825s
+sys     0m2.107s
+
