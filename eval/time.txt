@@ -246,3 +246,15 @@ real    24m21.418s
 user    24m12.825s
 sys     0m2.107s
 
+$ time gem-mapper -I ../../index/gem/hs37m-gem.gem -i long-250k.fq -q offset-33 -e 0.1 -s 1 > long-250k.gem-e0.1-s1.sam
+
+real    6m34.689s
+user    6m30.755s
+sys     0m2.095s
+
+$ time cushaw2-v2.1.8/cushaw2 -r ../../index/cushaw2/hs37m.fa -f long-250k.fq -o long-250k.cushaw.sam
+
+real    27m11.074s
+user    27m4.910s
+sys     0m1.976s
+
