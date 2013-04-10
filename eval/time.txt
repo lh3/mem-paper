@@ -258,3 +258,21 @@ real    27m11.074s
 user    27m4.910s
 sys     0m1.976s
 
+# new bwa-mem speed:
+
+[main] Version: 0.7.3-r375-beta
+[main] CMD: bwa mem ../hs37m.fa r1.fa r2.fa
+[main] Real time: 526.254 sec; CPU: 525.923 sec
+
+real    8m46.396s
+user    8m42.913s
+sys     0m3.012s
+
+[main] Version: 0.7.3-r375-beta
+[main] CMD: bwa mem ../hs37m.fa -
+[main] Real time: 503.374 sec; CPU: 503.197 sec
+
+real    8m23.444s
+user    8m20.584s
+sys     0m2.714s
+
