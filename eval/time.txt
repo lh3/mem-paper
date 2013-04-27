@@ -258,6 +258,13 @@ real    27m11.074s
 user    27m4.910s
 sys     0m1.976s
 
+$ time subread-1.3.1/bin/subread-align -i ../../index/subread/hs37m -r r12.fq -o 1.sam
+
+real    2m14.643s
+user    1m36.612s
+sys     0m4.344s
+
+
 # new bwa-mem speed:
 
 [main] Version: 0.7.3-r375-beta
@@ -275,4 +282,40 @@ sys     0m3.012s
 real    8m23.444s
 user    8m20.584s
 sys     0m2.714s
+
+$ time ./STAR --genomeDir ../../index/star --readFilesIn r12.fq --runThreadN 1 --outFilterMultimapNmax 1 --chimSegmentMin 30 --genomeLoad LoadAndKeep
+
+real    2m13.388s
+user    2m0.694s
+sys     0m7.499s
+
+$ time gsnap --force-single-end -Asam -d hs37m r12.fq > r12-se.gsnap.sam
+
+real    90m54.298s
+user    86m45.446s
+sys     5m48.105s
+
+$ time gsnap -Asam -d hs37m r1.fq r2.fq > r12-pe.gsnap.sam
+
+real    58m34.316s
+user    54m12.621s
+sys     5m22.857s
+
+
+
+
+
+# RNA-seq mapping; first-end only
+
+$ time tophat-2.0.8.Linux_x86_64/tophat2 ../../index/bowtie2/hs37m-bt2 r1.fq > r1-se.tophat.sam
+
+real    31m21.333s
+user    31m20.378s
+sys     0m15.236s
+
+$ time tophat-2.0.8.Linux_x86_64/tophat2 -o tophat_fusion_out --fusion-search --bowtie1 --no-coverage-search -r 0 --max-intron-length 100000 --fusion-min-dist 100000 --fusion-anchor-length 13 ../../index/bowtie/hs37m r1.fq > r1-se.fusion.sam
+
+real    23m56.235s
+user    23m56.459s
+sys     0m22.785s
 

@@ -6,6 +6,8 @@ set log x;
 set format x "10^{%L}"
 set yran [84:100]
 
+set pointsize 1.5
+
 
 
 set t po eps mono enhance "Helvetica,18"
@@ -20,6 +22,7 @@ plot "<awk '$3' r12-pe.mem.eval" u ($3/$2):($2/20000) t "bwa-mem (497s)" w lp ls
 	 "<awk '$3' r12-pe.bwasw.eval" u ($3/$2):($2/20000) t "bwa-sw (1043s)" w lp ls 4 lw 2, \
 	 "<awk '$3' r12-pe.bwa.eval" u ($3/$2):($2/20000) t "bwa (1092s)" w lp ls 8 lw 2, \
 	 "<awk '$1>3&&$3' r12-pe.novo.eval" u ($3/$2):($2/20000) t "novoalign (2585s)" w lp ls 6 lw 2
+#	 "<echo 255 1936412 3793" u ($3/$2):($2/20000) t '' w p ls 5
 
 #	 "<awk '$3' r12-pe.last.eval" u ($3/$2):($2/20000) t "last (5386s)" w lp ls 8 lw 2
 
@@ -34,6 +37,7 @@ plot "<awk '$3' r12-se.gem-e5.eval" u ($3/$2):($2/20000) t "gem (426s)" w lp ls 
 	 "<awk '$3' r12-se.bwasw.eval" u ($3/$2):($2/20000) t "bwa-sw (1002s)" w lp ls 4 lw 2, \
 	 "<awk '$3' r12-se.bwa.eval" u ($3/$2):($2/20000) t "bwa (1055s)" w lp ls 8 lw 2, \
 	 "<awk '$1>3&&$3' r12-se.novo.eval" u ($3/$2):($2/20000) t "novoalign (3960s)" w lp ls 6 lw 2
+#	 "<echo 255 1909382 8711" u ($3/$2):($2/20000) t '' w p ls 5
 
 #	 "<awk '$3' r12-se.last.eval" u ($3/$2):($2/20000) t "last (4302s)" w lp ls 8 lw 2
 
