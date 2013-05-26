@@ -124,12 +124,12 @@ end-to-end alignment.
 
 \begin{figure}[tb]
 \centering
-\includegraphics[width=0.4\textwidth]{alnroc-se}\\
-\includegraphics[width=0.4\textwidth]{alnroc-pe}
+\includegraphics[width=0.5\textwidth]{alnroc-color-se}\\
+\includegraphics[width=0.5\textwidth]{alnroc-color-pe}
 \caption{Percent mapped reads as a function of the false alignment rate under
 different mapping quality cutoff. Alignments with mapping quality 3 or lower
 are excluded. An alignment is \emph{wrong} if after correcting clipping, its
-start position is at least 5bp away from the simulated position. $10^6$ pairs
+start position is within 20bp from the simulated position. $10^6$ pairs
 of 101bp reads are simulated from the human reference genome using wgsim
 (http://bit.ly/wgsim2) with 1.5\% substitution errors and 0.2\% indel variants.
 The insert size follows a normal distribution $N(500,50^2)$. The reads are
@@ -137,10 +137,14 @@ aligned back to the genome either as single end (SE; top panel) or as paired
 end (PE; bottom panel). GEM is configured to allow up to 5 gaps and to output
 suboptimal alignments (option `--e5 --m5 --s1' for SE and `--e5 --m5 --s1 --pb'
 for PE). GEM does not compute mapping quality. Its mapping quality is estimated
-with a BWA-like algorithm with suboptimal
-alignments available.  Other mappers are run with the default setting except
-for specifying the insert size distribution. The run time in seconds on a
-single CPU core is shown in the parentheses.}\label{fig:eval}
+with a BWA-like algorithm with suboptimal alignments available. Other mappers
+are run with the default setting except for specifying the insert size
+distribution.
+%GSNAP and STAR essentially do not report mapping quality, so they are not shown in the plot.
+%For SE, GSNAP's accuracy is placed at $(2.8\times10^{-3},96.1\%)$ in the plot and STAR at $(4.6\times10^{-3},95.5\%)$.
+%For PE, GSNAP achieves $(1.1\times10^{-3},97.8\%)$ accuracy and STAR $(2.0\times10^{-3},96.8\%)$.
+The run time in seconds on a single CPU core is shown in the
+parentheses.}\label{fig:eval}
 \end{figure}
 
 \subsection{Paired-end mapping}
@@ -177,10 +181,11 @@ alignment scores, the insert size and the possibility of chimeric read pairs.
 \section{Results and Discussions}
 
 We evaluated the performance of BWA-MEM on simulated data together with
-NovoAlign (http://novocraft.com), GEM, Bowtie2, Cushaw2, BWA-SW and BWA
-(Figure~\ref{fig:eval}). On accuracy, NovoAlign is the best. BWA-MEM is close
-to NovoAlign for PE reads and is comparable to GEM and Cushaw2 for SE.  On
-speed, BWA-MEM is similar to GEM and Bowtie2 for this data set, but is about
+NovoAlign (http://novocraft.com), GEM, Bowtie2, Cushaw2, SeqAlto~\citep{Mu:2012fk}, %GSNAP~\citep{Wu:2010uq}, STAR~\citep{Dobin:2013kx},
+BWA-SW
+and BWA (Figure~\ref{fig:eval}). On accuracy, NovoAlign is the best. BWA-MEM
+is close to NovoAlign for PE reads and is comparable to GEM and Cushaw2 for SE.
+On speed, BWA-MEM is similar to GEM and Bowtie2 for this data set, but is about
 6 times as fast as Bowtie2 and Cushaw2 for a 650bp long-read data set.
 
 We speculate BWA-MEM is more performant for longer reads firstly because of its
@@ -191,17 +196,17 @@ BWA-SW are also able to identify chimeric reads, a crucial feature for contig
 alignment but lacked in most NGS long-read mappers. Our earlier
 paper~\citep{Li:2010fk} discussed this in details.
 
-%To evaluate the performance for even longer query sequences, we aligned the
-%{\it E. coli} K-12 MG1655 substrain (AC:NC\_000913; 4.6Mb in length) against
-%the 536 strain (AC:NC\_008253) with both BWA-MEM and
-%nucmer~\citep{Kurtz:2004zr}. Nucmer finished the alignment in 25 seconds,
-%giving 105,505 substitution differences between the strains. BWA-MEM is slower.
-%It finished the alignment in 131 seconds, reporting 104,321 substitutions of
-%which 102,241 overlapping with the nucmer output. Manual examination of the
-%substitutions unique to each aligner reveals that most of them fall in short
-%regions with very high divergence. It is unclear which aligner is better. Note
-%that although nucmer is faster in the evaluation, only BWA-MEM scales well to
-%large genomes.
+To evaluate the performance for even longer query sequences, we aligned the
+{\it E. coli} K-12 MG1655 substrain (AC:NC\_000913; 4.6Mb in length) against
+the 536 strain (AC:NC\_008253) with both BWA-MEM and
+nucmer~\citep{Kurtz:2004zr}. Nucmer finished the alignment in 25 seconds,
+giving 105,505 substitution differences between the strains. BWA-MEM is slower.
+It finished the alignment in 131 seconds, reporting 104,321 substitutions of
+which 102,241 overlapping with the nucmer output. Manual examination of the
+substitutions unique to each aligner reveals that most of them fall in short
+regions with very high divergence. It is unclear which aligner is better. Note
+that although nucmer is faster in the evaluation, only BWA-MEM scales well to
+large genomes.
 
 BWA-MEM is a fast and accurate aligner for sequence reads and is one of the few
 that work well for both 70bp reads and long sequences up to a few megabases.

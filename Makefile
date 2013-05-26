@@ -6,9 +6,9 @@
 .eps.gz.pdf:
 		gzip -dc $< | epstopdf --filter > $@
 
-all:bwamem.pdf mem-supp.pdf
+all:bwamem.pdf
 
-bwamem.pdf:bwamem.tex bwamem.bib alnroc-se.pdf alnroc-pe.pdf
+bwamem.pdf:bwamem.tex bwamem.bib alnroc-color-se.pdf alnroc-color-pe.pdf
 		pdflatex bwamem; bibtex bwamem; pdflatex bwamem; pdflatex bwamem;
 
 mem-supp.pdf:mem-supp.tex alnroc-color-se.pdf alnroc-color-pe.pdf
