@@ -22,7 +22,7 @@
 \section{Summary:} BWA-MEM is a new alignment algorithm for aligning sequence
 reads or assembly contigs against a large reference genome such as human.
 It automatically chooses between local and end-to-end alignments, supports
-paired-end reads and reports multiple local hits. The algorithm is robust to
+paired-end reads and performs chimeric alignment. The algorithm is robust to
 sequencing errors and applicable to a wide range of sequence lengths from 70bp
 to a few megabases. For mapping 100bp sequences, BWA-MEM shows better
 performance than several state-of-art read aligners to date.
@@ -50,8 +50,8 @@ capillary sequence reads, they are slow and lack features for analyzing
 large-scale NGS data. Fast moving NGS technologies keep pressing for the
 development of new alignment algorithms.
 
-In this background, a few long-read alignment algorithms, including
-BWA-SW~\citep{Li:2010fk}, Bowtie2~\citep{Langmead:2012fk},
+In this background, a few long-read alignment algorithms, notably including
+BWA-SW~\citep{Li:2010fk}, Bowtie2 \citep{Langmead:2012fk},
 Cushaw2~\citep{Liu:2012uq} and GEM~\citep{Marco-Sola:2012kx}, have been
 developed. However, they all have some weakness. BWA-SW is slower than bowtie2
 for 100bp reads at a comparable accuracy and less accurate then Cushaw2 at a
