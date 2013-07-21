@@ -301,7 +301,17 @@ real    58m34.316s
 user    54m12.621s
 sys     5m22.857s
 
+$ time alfalfa align -r ../../index/hs37m.fa -i ../../index/alfalfa/hs37m -0 r12.fq -o r12-se.alfalfa.sam
 
+real    8m0.170s
+user    7m18.372s
+sys     0m5.101s
+
+$ time alfalfa align -r ../../index/hs37m.fa -i ../../index/alfalfa/hs37m -1 r1.fq -2 r2.fq -I 350 -X 650 -o r12-pe.alfalfa.sam
+
+real    8m14.903s
+user    7m37.345s
+sys     0m4.321s
 
 
 
