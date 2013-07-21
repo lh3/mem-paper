@@ -187,21 +187,21 @@ It will be changed.
 > So lastal has remarkably good precision but aligns slightly fewer of the
 > reads with the recommended settings than bwa mem. If we turn these numbers
 > into an F1 score (http://en.wikipedia.org/wiki/F1_score)
-> we get lastal: 0.98883 bwaÂ­mem: 0.99519 so if you like the balance of
-> precision and recall provided by F1, bwaÂ­mem seems like a good choice. For
+> we get lastal: 0.98883 bwa­mem: 0.99519 so if you like the balance of
+> precision and recall provided by F1, bwa­mem seems like a good choice. For
 > things like identifying rare variants, I will probably stick with lastal when
 > possible since the occasional misalignments could potentially end up creating a
-> lot of rare variants. It might also be possible to improve lastalâ€™s recall
-> with a lower eÂ­value threshold, I did not explore this.
+> lot of rare variants. It might also be possible to improve lastal's recall
+> with a lower e­value threshold, I did not explore this.
 
 This evaluation has a flaw: it includes mapQ=0 mappings from bwa-mem but not
 from LAST (because LAST does not report them by default). Most mapQ=0 mapping
 are wrong. A better way is:
 
 	./accuracy.pl <(awk '/^@/||$5>=5' cbot_mem.sam) < cbot_mem.both.aln
-	precision: 0.99987314474185     recall: 0.986507797441738 ./accuracy.pl
-	<(awk '/^@/||$5>=30' cbot_mem.sam) < cbot_mem.both.aln precision: 1
-	recall: 0.983455974370526
+	precision: 0.99987314474185	recall: 0.986507797441738
+	./accuracy.pl <(awk '/^@/||$5>=30' cbot_mem.sam) < cbot_mem.both.aln
+	precision: 1	recall: 0.983455974370526
 
 At threshold mapQ=5, bwa-mem gives 5 mismapping, including two pairs and one
 end, all with mapQ<30. For one pair, bwa-mem chooses the position with fewer
