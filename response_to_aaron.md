@@ -232,3 +232,8 @@ negative words fully justified. It only takes hours to reject a manuscript
 written in months. Comments leading to a rejection need to be taken seriously.
 Unfortunately, very few reviewers run tools nowadays. Admittedly, even I have
 given very negative reviews once or twice without running the tools.)
+
+###References
+
+* BWA-MEM preprint: [http://arxiv.org/abs/1303.3997](http://arxiv.org/abs/1303.3997)
+* Aaron Darling's open review: [http://dx.doi.org/10.6084/m9.figshare.714096](http://dx.doi.org/10.6084/m9.figshare.714096)
