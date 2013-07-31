@@ -329,3 +329,21 @@ real    23m56.235s
 user    23m56.459s
 sys     0m22.785s
 
+
+
+
+
+$ wgsim -h -R 0.3 -1 600 -N 500000 -r 0.01 -S 11 ../../index/hs37m.fa r0.fq /dev/null
+
+$ bwa mem ~/apes/bwadb/hs37m.fa r0.fq > r0.sam
+
+[main] Version: 0.7.5a-r405
+[main] CMD: bwa mem /net/eichler/vol8/home/lh3lh3/apes/bwadb/hs37m.fa r0.fq
+[main] Real time: 2825.200 sec; CPU: 1226.223 sec
+
+$ time alfalfa align -r ../../index/hs37m.fa -i ../../index/alfalfa/hs37m -0 r0.fq -o r0.alfa.sam
+
+real    14m3.427s
+user    9m1.294s
+sys     0m8.065s
+
